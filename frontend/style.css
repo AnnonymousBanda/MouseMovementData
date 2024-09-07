@@ -1,0 +1,36 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#drawCanvas {
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+    background-color: rgb(218, 45, 218);
+    border-radius: 10px;
+    border: #fff solid 2px;
+    cursor: crosshair;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+button {
+    background-color: rgb(101, 101, 232);
+    color: #fff;
+    width: 100px;
+    padding: 10px 20px;
+    border-radius: 50rem;
+    cursor: pointer;
+}
