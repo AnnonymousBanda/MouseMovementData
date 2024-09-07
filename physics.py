@@ -34,7 +34,7 @@ class AnalysisMovement:
         self.accelerations_mean = self.__mean(self.velocities[-3], self.velocities[0])
         self.accelerations_max = np.max(self.accelerations[:-1])
         self.accelerations_min = np.min(self.accelerations[:-1])
-        self.a_beg_time = self.accelerations
+        self.a_beg_time = self.accelerations[0]
 
         self.velocities = self.velocities[:-2]
         self.time_stamp = self.time_stamp[:-1]

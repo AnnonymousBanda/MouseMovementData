@@ -1,9 +1,13 @@
 from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
 import pandas as pd
-
+import uuid
 import physics
 
+
 app = Flask(__name__)
+
+CORS(app)
 
 
 @app.route('/movement-data', methods=['POST'])
@@ -23,6 +27,7 @@ def process_data():
         movement_analyser = physics.AnalysisMovement(x, y, time)
 
         df = pd.DataFrame({
+            "UUID": [uuid.uuid4()]+[None]*(len(movement_analyser.velocities)-1),
             "velocity_x": movement_analyser.velocities_x,
             "velocity_x_mean": movement_analyser.velocities_x_mean,
             "velocity_x_max": movement_analyser.velocities_x_max,
@@ -61,12 +66,15 @@ def process_data():
             "dist_end_to_end": [movement_analyser.dist_end_to_end]+[None]*(len(movement_analyser.velocities)-1),
         })
 
+        print("Request Successfull")
+
         csv_file_path = 'data.csv'
         df.to_csv(csv_file_path, index=False)
 
         return send_file(csv_file_path, mimetype='text/csv', as_attachment=True)
 
     except Exception as e:
+        print("Request Failed", str(e))
         return jsonify({'error': str(e)}), 400
 
 
