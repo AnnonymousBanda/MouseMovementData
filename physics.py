@@ -12,36 +12,40 @@ class AnalysisMovement:
         self.trajectory_length = np.sum(np.sqrt(np.diff(self.points_x) ** 2 + np.diff(self.points_y) ** 2))
         self.dist_end_to_end = math.sqrt((points_x[-4] - points_x[0]) ** 2 + (points_y[-4] - points_y[0]) ** 2)
 
-        self.velocities_x = (self.__rate_change(points_x))[0:-2]
-        self.velocities_y = (self.__rate_change(points_y))[0:-2]
+        self.velocities_x = (self.__rate_change(points_x))
+        self.velocities_y = (self.__rate_change(points_y))
         self.velocities_x_mean = self.__mean(points_x[-4], points_x[0])
         self.velocities_y_mean = self.__mean(points_y[-4], points_y[0])
-        self.velocities_x_max = np.max(self.velocities_x)
-        self.velocities_y_max = np.max(self.velocities_y)
-        self.velocities_x_min = np.min(self.velocities_x)
-        self.velocities_y_min = np.min(self.velocities_y)
+        self.velocities_x_max = np.max(self.velocities_x[:-2])
+        self.velocities_y_max = np.max(self.velocities_y[:-2])
+        self.velocities_x_min = np.min(self.velocities_x[:-2])
+        self.velocities_y_min = np.min(self.velocities_y[:-2])
 
         self.velocities = np.sqrt(self.velocities_x ** 2 + self.velocities_y ** 2)
         self.velocities_mean = self.dist_end_to_end / self.elapsed_time
-        self.velocities_max = np.max(self.velocities)
-        self.velocities_min = np.min(self.velocities)
+        self.velocities_max = np.max(self.velocities[:-2])
+        self.velocities_min = np.min(self.velocities[:-2])
 
-        self.time_stamp = self.time_stamp[0:-1]
+        self.velocities_x = self.velocities_x[:-2]
+        self.velocities_y = self.velocities_y[:-2]
+        self.time_stamp = self.time_stamp[:-1]
 
-        self.accelerations = (self.__rate_change(self.velocities.tolist()))[0:-1]
-        self.accelerations_mean = self.__mean(self.velocities[-1], self.velocities[0])
-        self.accelerations_max = np.max(self.accelerations)
-        self.accelerations_min = np.min(self.accelerations)
+        self.accelerations = (self.__rate_change(self.velocities.tolist()))
+        self.accelerations_mean = self.__mean(self.velocities[-3], self.velocities[0])
+        self.accelerations_max = np.max(self.accelerations[:-1])
+        self.accelerations_min = np.min(self.accelerations[:-1])
         self.a_beg_time = self.accelerations
 
-        self.time_stamp = self.time_stamp[0:-1]
+        self.velocities = self.velocities[:-2]
+        self.time_stamp = self.time_stamp[:-1]
 
         self.jerk = self.__rate_change(self.accelerations.tolist())
-        self.jerk_mean = self.__mean(self.accelerations[-1], self.accelerations[0])
+        self.jerk_mean = self.__mean(self.accelerations[-2], self.accelerations[0])
         self.jerk_max = np.max(self.jerk)
         self.jerk_min = np.min(self.jerk)
 
-        self.time_stamp = self.time_stamp[0:-1]
+        self.accelerations = self.accelerations[:-1]
+        self.time_stamp = self.time_stamp[:-1]
 
         self.direction = self.__calculate_direction_angle()  # wrt +x-axis
         self.sum_of_angles = np.sum(self.direction)  # wrt +x-axis
@@ -74,7 +78,7 @@ class AnalysisMovement:
 
         return rate_change_a
 
-    def __mean(self, i, f):
+    def __mean(self, f, i):
         return (f - i) / self.elapsed_time
 
     def __calculate_direction_angle(self):
@@ -85,3 +89,22 @@ class AnalysisMovement:
         angles_degrees = np.where(angles_degrees < 0, angles_degrees + 360, angles_degrees)
 
         return angles_degrees
+
+
+# x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+# y = [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+# time = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+# ma = AnalysisMovement(x, y, time)
+# print(ma.points_x, ma.points_y)
+# print(ma.elapsed_time, ma.dist_end_to_end, ma.trajectory_length)
+# print("velociteis_x", ma.velocities_x, ma.velocities_x_mean, ma.velocities_x_max, ma.velocities_x_min)
+# print("velociteis_y", ma.velocities_y, ma.velocities_y_mean, ma.velocities_y_max, ma.velocities_y_min)
+# print("velocities", ma.velocities, ma.velocities_mean, ma.velocities_max, ma.velocities_min)
+# print("accelerations", ma.accelerations, ma.accelerations_mean, ma.accelerations_max, ma.accelerations_min)
+# print("jerk", ma.jerk, ma.jerk_mean, ma.jerk_max, ma.jerk_min)
+# print("time_stamp", ma.time_stamp)
+# print('\n angularvelocities', ma.angular_velocities, ma.angular_velocities_mean, ma.angular_velocities_max,
+#       ma.angular_velocities_min)
+# print('\n radius', ma.radius_of_curvature, ma.radius_of_curvature_mean, ma.radius_of_curvature_max,
+#       ma.radius_of_curvature_min)
+# print("directions",ma.direction)
