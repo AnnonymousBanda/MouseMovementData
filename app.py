@@ -6,17 +6,19 @@ import physics
 app = Flask(__name__)
 
 
-@app.route('/movement-data', methods=['GET'])
+@app.route('/movement-data', methods=['POST'])
 def process_data():
     try:
-        # data = request.get_json()
-        #
-        # x = data.get('x')
-        # y = data.get('y')
-        # time = data.get('time')
-        x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        y = [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
-        time = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        data = request.get_json()
+        
+        x = data.get('x')
+        y = data.get('y')
+        time = data.get('time')
+        
+        # Data validation
+        # x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        # y = [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+        # time = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
         movement_analyser = physics.AnalysisMovement(x, y, time)
 
@@ -51,12 +53,12 @@ def process_data():
             "radius_of_curvature_min": movement_analyser.radius_of_curvature_min,
             "direction": movement_analyser.direction,
             "sum_of_angles": movement_analyser.sum_of_angles,
-            # "straightness": movement_analyser.straightness,
-            # "num_points": movement_analyser.num_points,
-            # "a_beg_time": movement_analyser.a_beg_time
-            # "elapsed_time": movement_analyser.elapsed_time,
-            # "trajectory_length": movement_analyser.trajectory_length,
-            # "dist_end_to_end": movement_analyser.dist_end_to_end,
+            "straightness": [movement_analyser.straightness]+[None]*(len(movement_analyser.velocities)-1),
+            "num_points": [movement_analyser.num_points]+[None]*(len(movement_analyser.velocities)-1),
+            "a_beg_time": [movement_analyser.a_beg_time]+[None]*(len(movement_analyser.velocities)-1),
+            "elapsed_time": [movement_analyser.elapsed_time]+[None]*(len(movement_analyser.velocities)-1),
+            "trajectory_length": [movement_analyser.trajectory_length]+[None]*(len(movement_analyser.velocities)-1),
+            "dist_end_to_end": [movement_analyser.dist_end_to_end]+[None]*(len(movement_analyser.velocities)-1),
         })
 
         csv_file_path = 'data.csv'
